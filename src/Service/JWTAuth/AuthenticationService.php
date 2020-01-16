@@ -8,8 +8,9 @@
 
 namespace StCommonService\Service\JWTAuth;
 
+use Zend\Authentication\AuthenticationService as BaseAuthenticationService;
 
-class AuthenticationService
+class AuthenticationService extends BaseAuthenticationService
 {
 
 }

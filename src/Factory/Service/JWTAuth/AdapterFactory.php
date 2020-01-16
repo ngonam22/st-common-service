@@ -13,16 +13,16 @@ use Interop\Container\Exception\ContainerException;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\Authentication\AuthenticationService;
 
-class JWTAuthAdapterFactory implements FactoryInterface
+
+class AdapterFactory implements FactoryInterface
 {
+
+
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
 
-        return new AuthenticationService(
 
-        );
     }
 
 }

@@ -9,7 +9,7 @@ namespace StCommonService\Service\JWTAuth;
 
 use Zend\Authentication\Storage\StorageInterface;
 
-class JWTAuthStorage implements StorageInterface
+class Storage implements StorageInterface
 {
     public function write($contents)
     {
