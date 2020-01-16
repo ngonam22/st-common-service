@@ -16,17 +16,20 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\Authentication\AuthenticationService;
 
-use StCommonService\Service\JWTAuth\Storage;
 
 class AuthenticationFactory implements FactoryInterface
 {
     public $factories = [
         'StCommonService\JWTAdapter' => AdapterFactory::class,
-        'StCommonService\JWTStorage' => Storage::class
+        'StCommonService\JWTStorage' => StorageFactory::class
     ];
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
+        /** @var ServiceManager $container */
+        $this->_configureFactories($container);
+
+
         return new AuthenticationService(
             $container->get('StCommonService\JWTStorage'),
             null
@@ -35,6 +38,8 @@ class AuthenticationFactory implements FactoryInterface
 
     private function _configureFactories(ServiceManager $serviceManager)
     {
-        $serviceManager->configure([]);
+        $serviceManager->configure([
+            'factories' => $this->factories
+        ]);
     }
 }
