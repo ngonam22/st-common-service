@@ -8,17 +8,37 @@
 namespace StCommonService\Service\JWTAuth;
 
 use Zend\Authentication\Storage\StorageInterface;
+use Zend\Http\Request;
 
 class Storage implements StorageInterface
 {
+    /**
+     * Request instance
+     *
+     * @var Request
+     */
+    protected $request;
+
+    /**
+     * @var string
+     */
+    protected $jwt;
+
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+
+        $this->fetchJWT();
+    }
+
     public function write($contents)
     {
-        // TODO: Implement write() method.
+        return;
     }
 
     public function isEmpty()
     {
-        // TODO: Implement isEmpty() method.
+        return empty($this->jwt);
     }
 
     public function read()
@@ -28,6 +48,39 @@ class Storage implements StorageInterface
 
     public function clear()
     {
-        // TODO: Implement clear() method.
+        $this->jwt = false;
+    }
+
+    protected function fetchJWT(): void
+    {
+        $token = $this->fetchFromHeader();
+
+        if (empty($token))
+            $token = $this->fetchFromQuery();
+
+        if (empty($token)) {
+            $this->jwt = null;
+
+            return;
+        }
+
+
+    }
+
+    protected function fetchFromHeader(): string
+    {
+        $token = $this->request->getHeader('Authorization');
+
+        if (empty($token) || !is_string($token))
+            return null;
+
+        return str_replace('Bearer ', '', $token);
+    }
+
+    protected function fetchFromQuery(): string
+    {
+        $token = $this->request->getQuery('token', false);
+
+        return (empty($token) || !is_string($token)) ? null : $token;
     }
 }
