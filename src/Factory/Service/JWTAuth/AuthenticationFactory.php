@@ -26,6 +26,13 @@ class AuthenticationFactory implements FactoryInterface
         'StCommonService\JWTStorage' => StorageFactory::class
     ];
 
+    /**
+     * @param ContainerInterface $container
+     * @param string             $requestedName
+     * @param array|null         $options
+     * @return object|AuthenticationService
+     * @throws \Exception
+     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         // get the jwt config and generate the Config class
@@ -39,6 +46,7 @@ class AuthenticationFactory implements FactoryInterface
         /** @var Storage $storage */
         $storage = $container->get('StCommonService\JWTStorage');
         $storage->setConfig($config);
+        $storage->fetchJWT();
 
         return new AuthenticationService(
             $storage,

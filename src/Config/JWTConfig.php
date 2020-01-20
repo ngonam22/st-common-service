@@ -9,6 +9,7 @@
 namespace StCommonService\Config;
 
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key;
 
 class JWTConfig
 {
@@ -53,6 +54,8 @@ class JWTConfig
 
         if (empty($config['key']))
             throw new \Exception('JWT Key is not defined!');
+        else
+            $config['key'] = new Key($config['key']);
 
         if (isset($config['iss'])) {
             $config['issuer'] = $config['iss'];
@@ -83,10 +86,10 @@ class JWTConfig
      */
     public function getConfig(string $key = '')
     {
-        if (empty($key) || !array_key_exists($key, $this->_config))
+        if (empty($key))
             return $this->_config;
 
-        return $this->_config[$key];
+        return array_key_exists($key, $this->_config) ? $this->_config[$key] : null;
     }
 
     public function getDefaultConfig()

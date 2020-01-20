@@ -38,12 +38,14 @@ class Storage implements StorageInterface
     public function __construct(Request $request)
     {
         $this->request = $request;
-
-        $this->fetchJWT();
     }
 
+    /**
+     * @param mixed $contents
+     */
     public function write($contents)
     {
+        trigger_error('Storage does not support this write method', E_USER_WARNING);
         return;
     }
 
@@ -54,7 +56,7 @@ class Storage implements StorageInterface
 
     public function read()
     {
-        // TODO: Implement read() method.
+        return $this->jwt;
     }
 
     public function clear()
@@ -62,8 +64,14 @@ class Storage implements StorageInterface
         $this->jwt = false;
     }
 
-    protected function fetchJWT(): void
+    /**
+     * @throws \Exception
+     */
+    public function fetchJWT(): void
     {
+        if (empty($this->config))
+            throw new \Exception('Storage\'s Config not found');
+
         $token = $this->fetchFromHeader();
 
         if (empty($token))
@@ -87,6 +95,11 @@ class Storage implements StorageInterface
         $this->jwt = $jwt;
     }
 
+    /**
+     * Fetch JWT token from Authorization header
+     *
+     * @return string|null
+     */
     protected function fetchFromHeader(): ?string
     {
         $token = $this->request->getHeader('Authorization');
@@ -97,6 +110,11 @@ class Storage implements StorageInterface
         return str_replace('Bearer ', '', $token);
     }
 
+    /**
+     * Fetch JWT token from Token query param
+     *
+     * @return string|null
+     */
     protected function fetchFromQuery(): ?string
     {
         $token = $this->request->getQuery('token', false);
@@ -113,6 +131,31 @@ class Storage implements StorageInterface
             if (is_string($jwt))
                 $jwt = (new Parser())->parse($jwt);
 
+            if (!($jwt instanceof Token))
+                return false;
+
+            $verification = $jwt->verify($this->config->getConfig('signer'), $this->config->getConfig('key'));
+
+            if (!$verification)
+                return false;
+
+            $validationData = new ValidationData(time(), 10);
+
+
+            $validatableClaims = ['iss', 'aud', 'jti', 'sub'];
+            foreach ($validatableClaims as $claim) {
+                $claimConfig = $this->getConfig($claim);
+
+                if (empty($claimConfig))
+                    continue;
+
+                if (!$jwt->hasClaim($claim))
+                    return false;
+
+                $validationData->{'set' . ucfirst($claim)}($claimConfig);
+            }
+
+            return $jwt->validate($validationData) ? $jwt : false;
         } catch (\Exception $e) {
             return false;
         }
@@ -121,5 +164,13 @@ class Storage implements StorageInterface
     public function setConfig(JWTConfig $config)
     {
         $this->config = $config;
+    }
+
+    public function getConfig(string $key)
+    {
+        if (empty($this->config))
+            return $this->config;
+
+        return $this->config->getConfig($key);
     }
 }
