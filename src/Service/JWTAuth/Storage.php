@@ -9,6 +9,10 @@ namespace StCommonService\Service\JWTAuth;
 
 use Zend\Authentication\Storage\StorageInterface;
 use Zend\Http\Request;
+use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Token;
+use Lcobucci\JWT\ValidationData;
+use StCommonService\Config\JWTConfig;
 
 class Storage implements StorageInterface
 {
@@ -19,8 +23,15 @@ class Storage implements StorageInterface
      */
     protected $request;
 
+
     /**
-     * @var string
+     * @var JWTConfig
+     */
+    protected $config;
+
+
+    /**
+     * @var Token
      */
     protected $jwt;
 
@@ -59,15 +70,24 @@ class Storage implements StorageInterface
             $token = $this->fetchFromQuery();
 
         if (empty($token)) {
-            $this->jwt = null;
+            $this->jwt = false;
 
             return;
         }
 
 
+        // validate the JWT token
+        $jwt = $this->validateJWT($token);
+
+        if (empty($jwt) || !($jwt instanceof Token)) {
+            $this->jwt = false;
+            return;
+        }
+
+        $this->jwt = $jwt;
     }
 
-    protected function fetchFromHeader(): string
+    protected function fetchFromHeader(): ?string
     {
         $token = $this->request->getHeader('Authorization');
 
@@ -77,10 +97,29 @@ class Storage implements StorageInterface
         return str_replace('Bearer ', '', $token);
     }
 
-    protected function fetchFromQuery(): string
+    protected function fetchFromQuery(): ?string
     {
         $token = $this->request->getQuery('token', false);
 
         return (empty($token) || !is_string($token)) ? null : $token;
+    }
+
+    /**
+     * @param string|Token $jwt
+     */
+    protected function validateJWT($jwt)
+    {
+        try {
+            if (is_string($jwt))
+                $jwt = (new Parser())->parse($jwt);
+
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function setConfig(JWTConfig $config)
+    {
+        $this->config = $config;
     }
 }
