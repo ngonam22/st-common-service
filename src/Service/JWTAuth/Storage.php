@@ -123,7 +123,10 @@ class Storage implements StorageInterface
     }
 
     /**
-     * @param string|Token $jwt
+     * Return false if it doesnt pass the validate
+     * Token instance otherwise
+     *
+     * @param false|Token $jwt
      */
     protected function validateJWT($jwt)
     {
@@ -142,17 +145,21 @@ class Storage implements StorageInterface
             $validationData = new ValidationData(time(), 10);
 
 
-            $validatableClaims = ['iss', 'aud', 'jti', 'sub'];
-            foreach ($validatableClaims as $claim) {
-                $claimConfig = $this->getConfig($claim);
+            // if the claim is not in JWT Token, it still passes the validate method, even though
+            // we put it in ValidationData, thats why we have to write this validation
+            $validatableClaims = ['iss' => 'issuer', 'aud' => 'audience', 'jti' => 'id', 'sub' => 'subject'];
+            foreach ($validatableClaims as $claim => $claimName) {
+                $claimConfig = $this->getConfig($claimName);
 
                 if (empty($claimConfig))
                     continue;
 
+                // JWT Token doesnt have this claim, fail the validation chain
                 if (!$jwt->hasClaim($claim))
                     return false;
 
-                $validationData->{'set' . ucfirst($claim)}($claimConfig);
+                // set the claim to ValidationData to validate it further
+                $validationData->{'set' . ucfirst($claimName)}($claimConfig);
             }
 
             return $jwt->validate($validationData) ? $jwt : false;
