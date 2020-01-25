@@ -11,6 +11,7 @@ namespace StCommonService\Factory\Service\JWTAuth;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use StCommonService\Config\JWTConfig;
+use StCommonService\Service\JWTAuth\JWTAuthAdapter;
 use StCommonService\Service\JWTAuth\Storage;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
@@ -48,10 +49,14 @@ class AuthenticationFactory implements FactoryInterface
         $storage->setConfig($config);
         $storage->fetchJWT();
 
+        /** @var JWTAuthAdapter $jwtAdapter */
+        $jwtAdapter = $container->get('StCommonService\JWTAdapter');
+        $jwtAdapter->setConfig($config);
+
         return new AuthenticationService(
             $storage,
-//            $container->get('StCommonService\JWTAdapter')
-            null
+            $jwtAdapter
+//            null
         );
     }
 
