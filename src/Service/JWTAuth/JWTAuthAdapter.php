@@ -35,6 +35,11 @@ class JWTAuthAdapter extends AbstractAdapter
     protected $authenticationResultInfo = null;
 
 
+    public function __construct(EntityManager $em)
+    {
+        $this->em = $em;
+    }
+
     /*
      * {@inheritDoc}
      */
@@ -104,9 +109,12 @@ class JWTAuthAdapter extends AbstractAdapter
             return $this->createAuthenticationResult();
         }
 
-        $this->authenticationResultInfo['code']       = AuthenticationResult::SUCCESS;
-        $this->authenticationResultInfo['identity']   = $identity;
-        $this->authenticationResultInfo['messages'][] = 'Authentication successful.';
+        $this->authenticationResultInfo['code']     = AuthenticationResult::SUCCESS;
+        $this->authenticationResultInfo['identity'] = $identity;
+        $this->authenticationResultInfo['messages'] = [
+            'jwt' => 'hello',
+            'Authentication successful.',
+        ];
 
         return $this->createAuthenticationResult();
     }

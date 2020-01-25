@@ -14,15 +14,16 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use StCommonService\Service\JWTAuth\JWTAuthAdapter;
-
+use Doctrine\ORM\EntityManager;
 
 class AdapterFactory implements FactoryInterface
 {
-
-
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new JWTAuthAdapter();
+        /** @var EntityManager $em */
+        $em = $container->get('doctrine.entitymanager.orm_default');
+
+        return new JWTAuthAdapter($em);
     }
 
 }

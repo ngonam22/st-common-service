@@ -21,6 +21,8 @@ class JWTConfig
 
     protected $allowedConfigKeys = [
         'signer', 'key',
+        'identity_class', 'identity_property',
+        'credential_property', 'credential_callable',
         'iss', 'issuer',
         'aud', 'audience',
         'sub', 'subject',
