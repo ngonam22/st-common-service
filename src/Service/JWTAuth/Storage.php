@@ -8,6 +8,7 @@
 namespace StCommonService\Service\JWTAuth;
 
 use Zend\Authentication\Storage\StorageInterface;
+use Doctrine\ORM\EntityManager;
 use Zend\Http\Request;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Token;
@@ -23,21 +24,31 @@ class Storage implements StorageInterface
      */
     protected $request;
 
+    /**
+     * @var EntityManager
+     */
+    protected $em;
+
 
     /**
      * @var JWTConfig
      */
     protected $config;
 
+    /**
+     * @var
+     */
+    protected $identityEntity;
 
     /**
      * @var Token
      */
     protected $jwt;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, EntityManager $em)
     {
         $this->request = $request;
+        $this->em      = $em;
     }
 
     /**
@@ -56,7 +67,32 @@ class Storage implements StorageInterface
 
     public function read()
     {
-        return $this->jwt;
+        if ($this->isEmpty())
+            return false;
+
+        // get the uuid
+        if (empty($this->identityEntity)) {
+            $uuid = $this->jwt->hasClaim('uuid')
+                ? $this->jwt->getClaim('uuid')
+                : false;
+
+            if (!$uuid) {
+                $this->clear();
+                return false;
+            }
+
+            $repo = $this->em->getRepository(
+                $this->getConfig('identity_class')
+            );
+
+            if (empty($repo))
+                return false;
+
+            $this->identityEntity = $repo->findOneById($uuid);
+        }
+
+
+        return $this->identityEntity;
     }
 
     public function clear()
@@ -83,9 +119,9 @@ class Storage implements StorageInterface
             return;
         }
 
-
         // validate the JWT token
         $jwt = $this->validateJWT($token);
+
 
         if (empty($jwt) || !($jwt instanceof Token)) {
             $this->jwt = false;
@@ -135,6 +171,10 @@ class Storage implements StorageInterface
                 $jwt = (new Parser())->parse($jwt);
 
             if (!($jwt instanceof Token))
+                return false;
+
+            // validate UUID field
+            if (!$jwt->hasClaim('uuid'))
                 return false;
 
             $verification = $jwt->verify($this->config->getConfig('signer'), $this->config->getConfig('key'));

@@ -57,6 +57,7 @@ class JWTConfig
         else
             $config['key'] = new Key($config['key']);
 
+
         if (isset($config['iss'])) {
             $config['issuer'] = $config['iss'];
             unset($config['iss']);
@@ -95,7 +96,8 @@ class JWTConfig
     public function getDefaultConfig()
     {
         return [
-            'signer' => new Sha256(),
+            'signer'         => new Sha256(),
+            'identity_class' => 'Entity\StUser',
         ];
     }
 }

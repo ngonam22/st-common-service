@@ -11,6 +11,7 @@ namespace StCommonService\Factory\Service\JWTAuth;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use StCommonService\Service\JWTAuth\Storage;
+use Doctrine\ORM\EntityManager;
 use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
@@ -23,7 +24,10 @@ class StorageFactory implements FactoryInterface
         /** @var Request $request */
         $request = $container->get('request');
 
-        return new Storage($request);
+        /** @var EntityManager $em */
+        $em = $container->get('doctrine.entitymanager.orm_default');
+
+        return new Storage($request, $em);
     }
 
 }
