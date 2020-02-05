@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: apple
+ * User: Nam Ngo
  * Date: 2020-01-25
  * Time: 16:27
  */
@@ -139,7 +139,11 @@ class JWTAuthAdapter extends AbstractAdapter
                 . ' authentication adapter'
             );
 
-
+        $this->authenticationResultInfo = [
+            'code' => AuthenticationResult::FAILURE,
+            'identity' => $this->identity,
+            'messages' => [],
+        ];
     }
 
     /**

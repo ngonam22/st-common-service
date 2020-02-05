@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: apple
+ * User: Nam Ngo
  * Date: 2020-01-16
  * Time: 14:38
  */
@@ -56,7 +56,7 @@ class Storage implements StorageInterface
      */
     public function write($contents)
     {
-        trigger_error('Storage does not support this write method', E_USER_WARNING);
+//        trigger_error('Storage does not support this write method', E_USER_WARNING);
         return;
     }
 
