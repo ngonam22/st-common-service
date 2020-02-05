@@ -8,7 +8,8 @@
         "zendframework/zend-servicemanager": "^3.4",
         "lcobucci/jwt": "^3.3",
         "zendframework/zend-http": "^2.11",
-        "doctrine/orm": "2.7.*"
+        "doctrine/orm": "^2.6",
+        "laminas/laminas-permissions-acl": "^2.7"
     },
     "license": "GNU",
     "authors": [

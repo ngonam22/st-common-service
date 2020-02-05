@@ -8,6 +8,8 @@
 
 namespace StCommonService\Service\ApiAcl;
 
+use Laminas\Permissions\Acl\Acl as AclBase;
+
 class AclCommand
 {
     // group's command
@@ -57,7 +59,7 @@ class AclCommand
     {
         return [
             'command'    => self::RULE_COMMAND,
-            'rule'       => 'allow',
+            'rule'       => AclBase::TYPE_ALLOW,
             'roles'      => $roles,
             'resources'  => $resources,
             'privileges' => $privileges,
@@ -76,7 +78,7 @@ class AclCommand
     {
         return [
             'command'    => self::RULE_COMMAND,
-            'rule'       => 'deny',
+            'rule'       => AclBase::TYPE_DENY,
             'roles'      => $roles,
             'resources'  => $resources,
             'privileges' => $privileges,
