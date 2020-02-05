@@ -22,8 +22,8 @@ class Acl
 
     public function __construct(array $commands)
     {
-        $this->setCommands($commands);
         $this->_acl = new AclBase();
+        $this->setCommands($commands);
     }
 
     /**
@@ -47,11 +47,11 @@ class Acl
                     (array_key_exists('rules', $group) && is_array($group['rules'])) ? array_push($ruleGroup, ...$group['rules']) : null;
                     break;
                 case AclCommand::RESOURCE_GROUP_COMMAND:
-                    (array_key_exists('resources', $group) && is_array($group['resources'])) ? array_push($roleGroup, ...$group['resources']) : null;
+                    (array_key_exists('resources', $group) && is_array($group['resources'])) ? array_push($resourceGroup, ...$group['resources']) : null;
                     break;
 
                 case AclCommand::ROLE_GROUP_COMMAND:
-                    (array_key_exists('roles', $group) && is_array($group['roles'])) ? array_push($resourceGroup, ...$group['roles']) : null;
+                    (array_key_exists('roles', $group) && is_array($group['roles'])) ? array_push($roleGroup, ...$group['roles']) : null;
                     break;
             }
         }
@@ -67,7 +67,7 @@ class Acl
     {
         foreach ($resources as $resource) {
             if (
-                Arr::exists(['command', 'role', 'parent'], $resource) || $resource['command'] != AclCommand::RESOURCE_COMMAND
+                !Arr::exists(['command', 'resource', 'parent'], $resource) || $resource['command'] != AclCommand::RESOURCE_COMMAND
             )
                 continue;
 
@@ -84,11 +84,11 @@ class Acl
     {
         foreach ($roles as $role) {
             if (
-                Arr::exists(['command', 'role', 'parent'], $role) || $role['command'] != AclCommand::ROLE_COMMAND
+                !Arr::exists(['command', 'role', 'parents'], $role) || $role['command'] != AclCommand::ROLE_COMMAND
             )
                 continue;
 
-            $this->_acl->addRole($role['role'], $role['parent']);
+            $this->_acl->addRole($role['role'], $role['parents']);
         }
     }
 
@@ -96,7 +96,7 @@ class Acl
     {
         foreach ($rules as $rule) {
             if (
-                Arr::exists(['command', 'rule', 'role', 'resources', 'privileges'], $rule) ||
+                !Arr::exists(['command', 'rule', 'roles', 'resources', 'privileges'], $rule) ||
                 $rule['command'] != AclCommand::RULE_COMMAND
             )
                 continue;
@@ -104,7 +104,7 @@ class Acl
             $this->_acl->setRule(
                 AclBase::OP_ADD,
                 $rule['rule'],
-                $rule['role'],
+                $rule['roles'],
                 $rule['resources'],
                 $rule['privileges']
             );
