@@ -10,9 +10,14 @@ namespace StCommonService\Service\ApiAcl;
 
 use Laminas\Permissions\Acl\Acl as AclBase;
 use StCommonService\Helper\Arr;
+use Lcobucci\JWT\Token;
+use StCommonService\Helper\RouteMatch;
 
 class Acl
 {
+
+    const DEFAULT_ROLE = 'guest';
+
     private $_commands = [];
 
     /**
@@ -20,13 +25,66 @@ class Acl
      */
     private $_acl;
 
-    public function __construct(array $commands)
+    /**
+     * @var
+     */
+    private $_identity = null;
+
+    /**
+     * @var array
+     */
+    private $_routeMatchParams = [];
+
+
+    public function __construct()
     {
         $this->_acl = new AclBase();
-        $this->setCommands($commands);
+    }
+
+    public function authorize(): bool
+    {
+        $role = $this->getCurrentRole();
+
+        if (empty($role) || empty($this->_routeMatchParams))
+            return false;
+
+        $resource = RouteMatch::getModuleName($this->_routeMatchParams) . ':' . RouteMatch::getControllerName($this->_routeMatchParams);
+
+        return $this->_acl->hasRole($role) &&
+            $this->_acl->hasResource($resource) &&
+            $this->_acl->isAllowed($role, $resource)
+        ;
+    }
+
+
+    public function getCurrentRole(): ?string
+    {
+        if (empty($this->_identity) || !is_object($this->_identity) || !method_exists($this->_identity, 'getRole'))
+            return null;
+
+        return $this->_identity->getRole();
     }
 
     /**
+     * @param $identity
+     */
+    public function setIdentity($identity): void
+    {
+        $this->_identity = $identity;
+    }
+
+    /**
+     * Set params from RouteMatch instance to our local variable
+     *
+     * @param array $routeMatchParams
+     */
+    public function setRouteMatchParams(array $routeMatchParams): void
+    {
+        $this->_routeMatchParams = $routeMatchParams;
+    }
+
+    /**
+     * Before storing the array command, format it and save it to ACL
      * @param array $command
      */
     public function setCommands(array $commands): void

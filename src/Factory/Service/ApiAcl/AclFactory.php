@@ -14,6 +14,7 @@ use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ServiceManager\Factory\FactoryInterface;
 use StCommonService\Service\ApiAcl\Acl;
+use Lcobucci\JWT\Token;
 
 class AclFactory implements FactoryInterface
 {
@@ -21,9 +22,21 @@ class AclFactory implements FactoryInterface
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
+        $cpManager = $container->get('ControllerPluginManager');
+        $identity = $cpManager->has('Identity') ? $cpManager->get('Identity')() : null;
+
         $config = $container->get('Config')[$this->aclConfigKey];
 
-        return new Acl($config);
+        unset($cpManager);
+
+        $acl = new Acl();
+        $acl->setCommands($config);
+        $acl->setIdentity($identity);
+        $acl->setRouteMatchParams(
+            $container->get('Application')->getMvcEvent()->getRouteMatch()
+        );
+
+        return $acl;
     }
 
 }
