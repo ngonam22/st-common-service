@@ -52,7 +52,7 @@ class Acl
 
         return $this->_acl->hasRole($role) &&
             $this->_acl->hasResource($resource) &&
-            $this->_acl->isAllowed($role, $resource)
+            $this->_acl->isAllowed($role, $resource, RouteMatch::getActionName($this->_routeMatchParams))
         ;
     }
 

@@ -82,6 +82,18 @@ class Storage implements StorageInterface
                 return false;
             }
 
+            if ($uuid <= 0) {
+                // client still provides a valid JWT token, it just doesnt have the uuid claim (not login)
+                // so we create a default role for that
+                $this->identityEntity = new class {
+                    public function getRole() {
+                        return Acl::DEFAULT_ROLE;
+                    }
+                };
+
+                return $this->identityEntity;
+            }
+
             $repo = $this->em->getRepository(
                 $this->getConfig('identity_class')
             );
@@ -90,11 +102,6 @@ class Storage implements StorageInterface
                 return false;
 
             $this->identityEntity = $repo->findOneById($uuid);
-        } else {
-            // client still provides a valid JWT token, it just doesnt have the uuid claim (not login)
-            // so we create a default role for that
-            $this->identityEntity = new \stdClass();
-            $this->identityEntity->getRole = function() {return Acl::DEFAULT_ROLE;};
         }
 
         return $this->identityEntity;

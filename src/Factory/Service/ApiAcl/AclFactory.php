@@ -33,7 +33,7 @@ class AclFactory implements FactoryInterface
         $acl->setCommands($config);
         $acl->setIdentity($identity);
         $acl->setRouteMatchParams(
-            $container->get('Application')->getMvcEvent()->getRouteMatch()
+            $container->get('Application')->getMvcEvent()->getRouteMatch()->getParams()
         );
 
         return $acl;

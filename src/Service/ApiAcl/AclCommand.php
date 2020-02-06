@@ -50,12 +50,12 @@ class AclCommand
     /**
      * Return formatted instruction of an "allow" rule to the ACL
      *
-     * @param  string|array          $roles
-     * @param  string|array  $resources
-     * @param  string|array                             $privileges
-     * @return array A formatted instruction
+     * @param      $roles
+     * @param null $resources
+     * @param null $privileges
+     * @return array
      */
-    static public function allow($roles, $resources, $privileges = null)
+    static public function allow($roles, $resources = null, $privileges = null)
     {
         return [
             'command'    => self::RULE_COMMAND,
@@ -74,7 +74,7 @@ class AclCommand
      * @param  string|array $privileges
      * @return array A formatted instruction
      */
-    static public function deny($roles, $resources, $privileges = null)
+    static public function deny($roles, $resources = null, $privileges = null)
     {
         return [
             'command'    => self::RULE_COMMAND,

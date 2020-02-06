@@ -31,7 +31,7 @@ class RouteMatch
         $moduleName = (string) $params['controller'];
         $moduleName = explode('\\', $moduleName);
 
-        return $moduleName[0];
+        return strtolower($moduleName[0]);
     }
 
     /**
