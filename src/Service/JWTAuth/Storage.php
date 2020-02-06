@@ -74,10 +74,10 @@ class Storage implements StorageInterface
         // get the uuid
         if (empty($this->identityEntity)) {
             $uuid = $this->jwt->hasClaim('uuid')
-                ? $this->jwt->getClaim('uuid')
+                ? (int) $this->jwt->getClaim('uuid')
                 : false;
 
-            if (!$uuid) {
+            if ($uuid === false) {
                 $this->clear();
                 return false;
             }
