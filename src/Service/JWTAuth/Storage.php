@@ -86,6 +86,10 @@ class Storage implements StorageInterface
                 // client still provides a valid JWT token, it just doesnt have the uuid claim (not login)
                 // so we create a default role for that
                 $this->identityEntity = new class {
+                    public function getId() {
+                        return false;
+                    }
+
                     public function getRole() {
                         return Acl::DEFAULT_ROLE;
                     }
