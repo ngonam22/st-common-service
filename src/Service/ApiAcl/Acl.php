@@ -15,8 +15,17 @@ use StCommonService\Helper\RouteMatch;
 
 class Acl
 {
-
+    /*
+     * When client gives the appropriate token, but not yet authenticated,
+     * then its role is DEFAULT_ROLE
+     */
     const DEFAULT_ROLE = 'guest';
+
+    /*
+     * When client cant give the token,
+     * its role is ANONYMOUS_ROLE
+     */
+    const ANONYMOUS_ROLE = 'anonymous';
 
     private $_commands = [];
 
@@ -45,7 +54,10 @@ class Acl
     {
         $role = $this->getCurrentRole();
 
-        if (empty($role) || empty($this->_routeMatchParams))
+        if (empty($role))
+            $role = self::ANONYMOUS_ROLE;
+
+        if (empty($this->_routeMatchParams))
             return false;
 
         $resource = RouteMatch::getModuleName($this->_routeMatchParams) . ':' . RouteMatch::getControllerName($this->_routeMatchParams);

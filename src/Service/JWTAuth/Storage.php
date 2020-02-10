@@ -156,10 +156,10 @@ class Storage implements StorageInterface
     {
         $token = $this->request->getHeader('Authorization');
 
-        if (empty($token) || !is_string($token))
+        if (empty($token) || !($token instanceof \Zend\Http\Header\Authorization))
             return null;
 
-        return str_replace('Bearer ', '', $token);
+        return str_replace('Bearer ', '', $token->getFieldValue());
     }
 
     /**
