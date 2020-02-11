@@ -22,13 +22,13 @@ class Identity
      *
      * @var null
      */
-    private $_stDevice = null;
+    private $_device = null;
 
     /**
      * Doctrine user entity
      * @var null
      */
-    private $_stUser = null;
+    private $_user = null;
 
     /**
      * Role
@@ -40,33 +40,33 @@ class Identity
     /**
      * @return null
      */
-    public function getStDevice()
+    public function getDevice()
     {
-        return $this->_stDevice;
+        return $this->_device;
     }
 
     /**
-     * @param null $stDevice
+     * @param null $device
      */
-    public function setStDevice($stDevice): void
+    public function setDevice($device): void
     {
-        $this->_stDevice = $stDevice;
+        $this->_device = $device;
     }
 
     /**
      * @return null
      */
-    public function getStUser()
+    public function getUser()
     {
-        return $this->_stUser;
+        return $this->_user;
     }
 
     /**
-     * @param null $stUser
+     * @param null $user
      */
-    public function setStUser($stUser): void
+    public function setUser($user): void
     {
-        $this->_stUser = $stUser;
+        $this->_user = $user;
     }
 
     /**
