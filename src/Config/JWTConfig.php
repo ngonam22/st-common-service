@@ -23,6 +23,7 @@ class JWTConfig
         'signer', 'key',
         'identity_class', 'identity_property',
         'credential_property', 'credential_callable',
+        'expire_time', 'identity_claim',
         'iss', 'issuer',
         'aud', 'audience',
         'sub', 'subject',
@@ -100,6 +101,7 @@ class JWTConfig
         return [
             'signer'         => new Sha256(),
             'identity_class' => 'Entity\StUser',
+            'identity_claim' => 'uid',
         ];
     }
 }

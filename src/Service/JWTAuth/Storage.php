@@ -73,8 +73,8 @@ class Storage implements StorageInterface
 
         // get the uuid
         if (empty($this->identityEntity)) {
-            $uuid = $this->jwt->hasClaim('uuid')
-                ? (int) $this->jwt->getClaim('uuid')
+            $uuid = $this->jwt->hasClaim($this->config->getConfig('identity_claim'))
+                ? (int) $this->jwt->getClaim($this->config->getConfig('identity_claim'))
                 : false;
 
             if ($uuid === false) {
@@ -178,7 +178,7 @@ class Storage implements StorageInterface
      * Return false if it doesnt pass the validate
      * Token instance otherwise
      *
-     * @param false|Token $jwt
+     * @param string|Token $jwt
      */
     protected function validateJWT($jwt)
     {
@@ -190,7 +190,7 @@ class Storage implements StorageInterface
                 return false;
 
             // validate UUID field
-            if (!$jwt->hasClaim('uuid'))
+            if (!$jwt->hasClaim($this->config->getConfig('identity_claim')))
                 return false;
 
             $verification = $jwt->verify($this->config->getConfig('signer'), $this->config->getConfig('key'));
