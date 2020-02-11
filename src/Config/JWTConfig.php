@@ -23,7 +23,9 @@ class JWTConfig
         'signer', 'key',
         'identity_class', 'identity_property',
         'credential_property', 'credential_callable',
-        'expire_time', 'identity_claim',
+        'expire_time', 'identity_claim', 'jwt_identity_class',
+        'authorizing_callable',
+
         'iss', 'issuer',
         'aud', 'audience',
         'sub', 'subject',
