@@ -8,6 +8,8 @@
 
 namespace StCommonService\Service\JWTAuth;
 
+use StCommonService\Service\ApiAcl\Acl;
+
 /**
  * Class Identity
  *
@@ -26,7 +28,7 @@ class Identity
 
     /**
      * Doctrine user entity
-     * @var null
+     * @var null|mixed
      */
     private $_user = null;
 
@@ -35,10 +37,10 @@ class Identity
      *
      * @var string
      */
-    private $_role = 'anonymous';
+    private $_role = Acl::ANONYMOUS_ROLE;
 
     /**
-     * @return null
+     * @return mixed
      */
     public function getDevice()
     {
@@ -46,7 +48,7 @@ class Identity
     }
 
     /**
-     * @param null $device
+     * @param mixed $device
      */
     public function setDevice($device): void
     {
@@ -54,7 +56,7 @@ class Identity
     }
 
     /**
-     * @return null
+     * @return mixed
      */
     public function getUser()
     {
@@ -62,7 +64,7 @@ class Identity
     }
 
     /**
-     * @param null $user
+     * @param mixed $user
      */
     public function setUser($user): void
     {
