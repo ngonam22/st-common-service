@@ -105,7 +105,7 @@ class Storage implements StorageInterface
                 return false;
 
             if (is_callable($this->getConfig('authorizing_callable'))) {
-                $identityEntity = $this->getConfig('authorizing_callable')($identityEntity);
+                $identityEntity = $this->getConfig('authorizing_callable')($identityEntity, $this->jwt);
             }
 
             if (empty($identityEntity) || !($identityEntity instanceof Identity)) {
