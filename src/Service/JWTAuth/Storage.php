@@ -104,10 +104,13 @@ class Storage implements StorageInterface
             if (empty($identityEntity))
                 return false;
 
+            // dev team must take care of it from here
+            // they will transform it from Entity to Identity based on business requirement
             if (is_callable($this->getConfig('authorizing_callable'))) {
                 $identityEntity = $this->getConfig('authorizing_callable')($identityEntity, $this->jwt);
             }
 
+            // make sure the return from em, is the Identity instance we want
             if (empty($identityEntity) || !($identityEntity instanceof Identity)) {
                 $this->clear();
                 return false;

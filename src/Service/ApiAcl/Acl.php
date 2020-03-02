@@ -9,8 +9,8 @@
 namespace StCommonService\Service\ApiAcl;
 
 use Laminas\Permissions\Acl\Acl as AclBase;
+use StCommonService\Service\JWTAuth\Identity;
 use StCommonService\Helper\Arr;
-use Lcobucci\JWT\Token;
 use StCommonService\Helper\RouteMatch;
 
 class Acl
@@ -35,7 +35,7 @@ class Acl
     private $_acl;
 
     /**
-     * @var
+     * @var Identity
      */
     private $_identity = null;
 
@@ -69,10 +69,15 @@ class Acl
     }
 
 
-    public function getCurrentRole(): ?string
+    /**
+     * Get current of this request
+     *
+     * @return string
+     */
+    public function getCurrentRole(): string
     {
         if (empty($this->_identity) || !is_object($this->_identity) || !method_exists($this->_identity, 'getRole'))
-            return null;
+            return self::ANONYMOUS_ROLE;
 
         return $this->_identity->getRole();
     }
@@ -83,6 +88,14 @@ class Acl
     public function setIdentity($identity): void
     {
         $this->_identity = $identity;
+    }
+
+    /**
+     * @return Identity
+     */
+    public function getIdentity()
+    {
+        return $this->_identity;
     }
 
     /**
