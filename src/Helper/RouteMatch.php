@@ -38,7 +38,7 @@ class RouteMatch
      * @param array $params
      * @return string
      */
-    static public function getControllerName(array $params = []): string
+    static public function getControllerName(array $params = [], bool $longName = false): string
     {
         $controllerName = 'no-controller';
 
@@ -46,8 +46,21 @@ class RouteMatch
             return $controllerName;
 
         $controllerName = (string) $params['controller'];
-        $controllerName = explode('\\', $controllerName);
-        $controllerName = end($controllerName);
+
+        if ($longName) {
+            $pattern = '/^\w+\\\\Controller\\\\(?<name>(\w+\d?\\\\?)*)/';
+
+            preg_match($pattern, $controllerName, $matches);
+
+            if (!empty($matches['name']) && is_string($matches['name']))
+                $controllerName = strtolower($matches['name']);
+            else
+                $controllerName = '';
+
+        } else {
+            $controllerName = explode('\\', $controllerName);
+            $controllerName = end($controllerName);
+        }
 
         return str_replace('controller','',strtolower($controllerName));
     }

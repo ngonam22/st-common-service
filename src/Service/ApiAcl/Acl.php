@@ -60,7 +60,7 @@ class Acl
         if (empty($this->_routeMatchParams))
             return false;
 
-        $resource = RouteMatch::getModuleName($this->_routeMatchParams) . ':' . RouteMatch::getControllerName($this->_routeMatchParams);
+        $resource = RouteMatch::getModuleName($this->_routeMatchParams) . ':' . RouteMatch::getControllerName($this->_routeMatchParams, true);
 
         return $this->_acl->hasRole($role) &&
             $this->_acl->hasResource($resource) &&
