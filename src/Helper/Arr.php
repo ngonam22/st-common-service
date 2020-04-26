@@ -42,14 +42,14 @@ class Arr
         if (is_null($key))
             return $array;
 
-        if (static::exists($array, $key))
+        if (static::exists($key, $array))
             return $array[$key];
 
         if (strpos($key, '.') === false)
             return $array[$key] ?? $default;
 
         foreach (explode('.', $key) as $segment) {
-            if (static::exists($array, $segment))
+            if (static::exists($segment, $array))
                 $array = $array[$segment];
         }
 
