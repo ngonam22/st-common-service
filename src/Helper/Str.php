@@ -19,9 +19,10 @@ class Str
      * @return string
      * @throws \Exception
      */
-    public static function random($length = 16)
+    public static function random(int $length = 16): string
     {
         $string = '';
+        $length = $length < 0 ? 1 : $length;
 
         while (($len = strlen($string)) < $length) {
             $size = $length - $len;

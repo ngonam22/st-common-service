@@ -62,7 +62,7 @@ class Arr
      * @param  array  $array
      * @return array
      */
-    public static function collapse($array)
+    public static function collapse(array $array)
     {
         $results = [];
         foreach ($array as $values) {
