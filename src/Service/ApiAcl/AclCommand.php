@@ -22,8 +22,11 @@ class AclCommand
     const RESOURCE_COMMAND = 'resource_command';
     const ROLE_COMMAND     = 'role_command';
 
-
-    static public function rules(...$rules)
+    /**
+     * @param mixed ...$rules
+     * @return array
+     */
+    static public function rules(...$rules): array
     {
         return [
             'command' => self::RULE_GROUP_COMMAND,
@@ -31,7 +34,13 @@ class AclCommand
         ];
     }
 
-    static public function resources(...$resources)
+    /**
+     * Group all the resources into Resource Group command
+     *
+     * @param array ...$resources
+     * @return array
+     */
+    static public function resources(...$resources): array
     {
         return [
             'command'   => self::RESOURCE_GROUP_COMMAND,
@@ -39,7 +48,13 @@ class AclCommand
         ];
     }
 
-    static public function roles(...$roles)
+    /**
+     * Group all the roles to Role Group command
+     *
+     * @param array ...$roles Array of roles
+     * @return array
+     */
+    static public function roles(...$roles): array
     {
         return [
             'command' => self::ROLE_GROUP_COMMAND,
@@ -55,7 +70,7 @@ class AclCommand
      * @param null $privileges
      * @return array
      */
-    static public function allow($roles, $resources = null, $privileges = null)
+    static public function allow($roles, $resources = null, $privileges = null): array
     {
         return [
             'command'    => self::RULE_COMMAND,
@@ -74,7 +89,7 @@ class AclCommand
      * @param  string|array $privileges
      * @return array A formatted instruction
      */
-    static public function deny($roles, $resources = null, $privileges = null)
+    static public function deny($roles, $resources = null, $privileges = null): array
     {
         return [
             'command'    => self::RULE_COMMAND,
@@ -95,7 +110,7 @@ class AclCommand
      * @param  string $parent
      * @return array A formatted instruction
      */
-    static public function addResource($resource, $parent = null)
+    static public function addResource(string $resource, ?string $parent = null): array
     {
         return [
             'command'  => self::RESOURCE_COMMAND,
@@ -122,7 +137,7 @@ class AclCommand
      * @param  string|array $parents
      * @return array A formatted instruction
      */
-    static public function addRole($role, $parents = null)
+    static public function addRole(string $role, ?string $parents = null): array
     {
         return [
             'command' => self::ROLE_COMMAND,

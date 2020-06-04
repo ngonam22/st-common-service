@@ -53,6 +53,8 @@ class Storage implements StorageInterface
     }
 
     /**
+     * JWT storage does not support write method
+     *
      * @param mixed $contents
      */
     public function write($contents)
@@ -61,11 +63,17 @@ class Storage implements StorageInterface
         return;
     }
 
-    public function isEmpty()
+    /**
+     * {@inheritDocs}
+     */
+    public function isEmpty(): bool
     {
         return empty($this->jwt);
     }
 
+    /**
+     * @return false|Identity
+     */
     public function read()
     {
         if ($this->isEmpty())
@@ -105,7 +113,7 @@ class Storage implements StorageInterface
                 return false;
 
             // dev team must take care of it from here
-            // they will transform it from Entity to Identity based on business requirement
+            // they will transform it from Entity to Identity based on their business requirement
             if (is_callable($this->getConfig('authorizing_callable'))) {
                 $identityEntity = $this->getConfig('authorizing_callable')($identityEntity, $this->jwt);
             }
@@ -122,12 +130,19 @@ class Storage implements StorageInterface
         return $this->identityEntity;
     }
 
-    public function clear()
+    /**
+     * Override the clear method
+     * Clear the jwt from our storage
+     */
+    public function clear(): void
     {
         $this->jwt = false;
     }
 
     /**
+     * Fetch the jwt from header or query params
+     * Then validate and set it into our variable
+     *
      * @throws \Exception
      */
     public function fetchJWT(): void
@@ -190,6 +205,7 @@ class Storage implements StorageInterface
      * Token instance otherwise
      *
      * @param string|Token $jwt
+     * @param bool|Token $jwt
      */
     protected function validateJWT($jwt)
     {
@@ -235,7 +251,7 @@ class Storage implements StorageInterface
         }
     }
 
-    public function setConfig(JWTConfig $config)
+    public function setConfig(JWTConfig $config): void
     {
         $this->config = $config;
     }

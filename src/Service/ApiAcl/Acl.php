@@ -50,6 +50,12 @@ class Acl
         $this->_acl = new AclBase();
     }
 
+    /**
+     * Authorize the current route
+     * with matched role and resource in config
+     *
+     * @return bool
+     */
     public function authorize(): bool
     {
         $role = $this->getCurrentRole();
@@ -114,43 +120,57 @@ class Acl
      */
     public function setCommands(array $commands): void
     {
-        $this->_commands = $this->_formatCommand($commands);
+        $this->_commands = $this->_parseCommand($commands);
     }
 
-    private function _formatCommand(array $commands): array
+    /**
+     * Parse the instruction command group
+     *
+     * @param array $commands
+     * @return array
+     */
+    private function _parseCommand(array $commands): array
     {
         $ruleGroup = $roleGroup = $resourceGroup = [];
 
+        // validate the command group
         foreach ($commands as $group) {
-            if (!array_key_exists('command', $group))
+            if (!Arr::exists('command', $group))
                 continue;
 
             switch ($group['command']) {
                 case AclCommand::RULE_GROUP_COMMAND:
-                    (array_key_exists('rules', $group) && is_array($group['rules'])) ? array_push($ruleGroup, ...$group['rules']) : null;
+                    (Arr::exists('rules', $group) && is_array($group['rules'])) ? array_push($ruleGroup, ...$group['rules']) : null;
                     break;
                 case AclCommand::RESOURCE_GROUP_COMMAND:
-                    (array_key_exists('resources', $group) && is_array($group['resources'])) ? array_push($resourceGroup, ...$group['resources']) : null;
+                    (Arr::exists('resources', $group) && is_array($group['resources'])) ? array_push($resourceGroup, ...$group['resources']) : null;
                     break;
 
                 case AclCommand::ROLE_GROUP_COMMAND:
-                    (array_key_exists('roles', $group) && is_array($group['roles'])) ? array_push($roleGroup, ...$group['roles']) : null;
+                    (Arr::exists('roles', $group) && is_array($group['roles'])) ? array_push($roleGroup, ...$group['roles']) : null;
                     break;
             }
         }
 
+        // set the value to _acl based on the validated group
         $this->_registerResource($resourceGroup);
         $this->_registerRole($roleGroup);
         $this->_registerRule($ruleGroup);
 
+        // TODO: we should return the actual executed commands not the input again
         return $commands;
     }
 
+    /**
+     *
+     * @param array $resources
+     */
     private function _registerResource(array $resources): void
     {
         foreach ($resources as $resource) {
             if (
-                !Arr::exists(['command', 'resource', 'parent'], $resource) || $resource['command'] != AclCommand::RESOURCE_COMMAND
+                $resource['command'] != AclCommand::RESOURCE_COMMAND ||
+                !Arr::exists(['command', 'resource', 'parent'], $resource)
             )
                 continue;
 
@@ -167,7 +187,8 @@ class Acl
     {
         foreach ($roles as $role) {
             if (
-                !Arr::exists(['command', 'role', 'parents'], $role) || $role['command'] != AclCommand::ROLE_COMMAND
+                $role['command'] != AclCommand::ROLE_COMMAND ||
+                !Arr::exists(['command', 'role', 'parents'], $role)
             )
                 continue;
 
@@ -175,12 +196,17 @@ class Acl
         }
     }
 
+    /**
+     * Set rules from rule instruction groups to _acl
+     *
+     * @param array $rules
+     */
     private function _registerRule(array $rules): void
     {
         foreach ($rules as $rule) {
             if (
-                !Arr::exists(['command', 'rule', 'roles', 'resources', 'privileges'], $rule) ||
-                $rule['command'] != AclCommand::RULE_COMMAND
+                $rule['command'] != AclCommand::RULE_COMMAND ||
+                !Arr::exists(['command', 'rule', 'roles', 'resources', 'privileges'], $rule)
             )
                 continue;
 
